@@ -9,6 +9,7 @@
   "author": "Amir hatami",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.927.0",
     "serverless-websockets-plugin": "^1.0.0"
   }
 }

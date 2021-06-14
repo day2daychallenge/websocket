@@ -1,49 +1,51 @@
 'use strict';
 
-import AWS from 'aws-sdk';
+const AWS = require('aws-sdk');
 let dynamo = new AWS.DynamoDB.DocumentClient();
 
 require('aws-sdk/clients/apigatewaymanagementapi'); 
 
 const CHATCONNECTION_TABLE = 'chatIdTable';
 
-const successfulResponse = {
-  statusCode = 200,
-  body: "everything is alright."
+const successfullResponse = {
+  statusCode: 200,
+  body: 'everything is alright'
 };
-module.exports.connectionHandler =(event, context, callback) {
+
+module.exports.connectionHandler = (event, context, callback) => {
   console.log(event);
-  if(event.requestContext.eventType === 'CONNECT'){
-    //Handle the connect
+
+  if (event.requestContext.eventType === 'CONNECT') {
+    // Handle connection
     addConnection(event.requestContext.connectionId)
-      .then(() =>{
-        callback(null,successfulResponse);
+      .then(() => {
+        callback(null, successfullResponse);
       })
-      .catch(err =>{
+      .catch(err => {
         console.log(err);
-        callback(null, JSON.stringify(err,null,2));
+        callback(null, JSON.stringify(err));
       });
-  }else if(event.requestContext.eventType === 'DISCONNECT'){
-    //Handle the disconnection
+  } else if (event.requestContext.eventType === 'DISCONNECT') {
+    // Handle disconnection
     deleteConnection(event.requestContext.connectionId)
-      .then(() =>{
-        callback(null,successfulResponse);
+      .then(() => {
+        callback(null, successfullResponse);
       })
       .catch(err => {
         console.log(err);
         callback(null, {
           statusCode: 500,
-          body: 'Failed to connect:'+JSON.stringify(err,null,2)
+          body: 'Failed to connect: ' + JSON.stringify(err)
         });
       });
   }
-}
+};
 
 const addConnection = connectionId => {
   const params = {
     TableName: CHATCONNECTION_TABLE,
-    Item:{
-      connectionId: connectionId
+    Item: {
+      connectionId: connectionId 
     }
   };
 
@@ -53,38 +55,38 @@ const addConnection = connectionId => {
 const deleteConnection = connectionId => {
   const params = {
     TableName: CHATCONNECTION_TABLE,
-    Item:{
-      connectionId: connectionId
+    Key: {
+      connectionId: connectionId 
     }
   };
 
   return dynamo.delete(params).promise();
 };
-
-module.exports.defaultHandler = (event, context, callback) {
-  console.log('defaultHandler was called.');
+// THIS ONE DOESNT DO ANYHTING
+module.exports.defaultHandler = (event, context, callback) => {
+  console.log('defaultHandler was called');
   console.log(event);
 
-  callback(null,{
-    statusCode:200 ,
+  callback(null, {
+    statusCode: 200,
     body: 'defaultHandler'
   });
 };
 
-module.exports.sendMessageHandler = (event, context, callback){
-  sendMessageToAllConnected(event).then(()=>{
-    callback(null, successfulResponse);
-  }).catch(err => {
-    callback(null, JSON.stringify(err, null,2));
+module.exports.sendMessageHandler = (event, context, callback) => {
+  sendMessageToAllConnected(event).then(() => {
+    callback(null, successfullResponse)
+  }).catch (err => {
+    callback(null, JSON.stringify(err));
   });
 }
 
 const sendMessageToAllConnected = (event) => {
   return getConnectionIds().then(connectionData => {
-    return connectionData.Item.map(connectionId =>{
-      return send(event,connectionId.connectionId)
-    })
-  })
+    return connectionData.Items.map(connectionId => {
+      return send(event, connectionId.connectionId);
+    });
+  });
 }
 
 const getConnectionIds = () => {  

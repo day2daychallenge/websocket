@@ -1,11 +1,14 @@
 {
   "name": "websocket",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a sample AWS web socket project.",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Amir hatami",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "serverless-websockets-plugin": "^1.0.0"
+  }
 }

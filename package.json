@@ -4,7 +4,9 @@
   "description": "This is a sample AWS web socket project.",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "serverless deploy",
+    "sendCommand": "wscat -c wss://sudnmxwhb3.execute-api.us-east-1.amazonaws.com/prod/"
   },
   "author": "Amir hatami",
   "license": "ISC",
